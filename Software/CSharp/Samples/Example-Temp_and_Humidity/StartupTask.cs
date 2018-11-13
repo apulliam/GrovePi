@@ -85,5 +85,47 @@ namespace TempAndHumid
                 }
             }
         }
+
+        public static void TestTemperatureAndHumiditySensor()
+        {
+            // Connect the Sound Sensor to Digital port 4
+            // Models of Temp and Humidity sensors are - Dht11, Dht12, Dht21
+            // In this example, we use the DHT11 sensor that comes with the GrovePi Starter Kit.
+            /// Specifies the model of sensor. 
+            /// DHT11 - blue one - comes with the GrovePi+ Starter Kit.
+            /// DHT22 - white one, aka DHT Pro or AM2302.
+            /// DHT21 - black one, aka AM2301.
+           
+            IDHTTemperatureAndHumiditySensor sensor = DeviceFactory.Build.DHTTemperatureAndHumiditySensor(Pin.DigitalPin1, DHTModel.Dht11);
+
+            // Loop endlessly
+            while (true)
+            {
+                Task.Delay(1000).Wait(); //Delay 1 second
+                try
+                {
+                    // Check the value of the Sensor.
+                    // Temperature in Celsius is returned as a double type.  Convert it to string so we can print it.
+                    sensor.Measure();
+                    string sensortemp = sensor.TemperatureInCelsius.ToString();
+                    // Same for Humidity.  
+                    string sensorhum = sensor.Humidity.ToString();
+                    
+                    // Print all of the values to the debug window.  
+                    System.Diagnostics.Debug.WriteLine("Temp is " + sensortemp + " C.  And the Humidity is " + sensorhum + "%. ");
+
+                }
+                catch (Exception ex)
+                {
+                    // NOTE: There are frequent exceptions of the following:
+                    // WinRT information: Unexpected number of bytes was transferred. Expected: '. Actual: '.
+                    // This appears to be caused by the rapid frequency of writes to the GPIO
+                    // These are being swallowed here/
+
+                    // If you want to see the exceptions uncomment the following:
+                    // System.Diagnostics.Debug.WriteLine(ex.ToString());
+                }
+            }
+        }
     }
 }
